@@ -269,7 +269,7 @@ function App() {
           <p className="eyebrow">Guardrail Context</p>
           <h3>Proof is not a screenshot. Proof is an evidence chain.</h3>
           <p>
-            Faytâ€™s public materials should clearly distinguish paper-sim validation from real-money beta usage.
+            Fayt's public materials should clearly distinguish paper-sim validation from real-money beta usage.
             The company site can show paper proof, but the real-money beta must remain bounded by user-controlled
             accounts, local credentials, and documented risk acknowledgements.
           </p>
@@ -280,7 +280,7 @@ function App() {
         <SectionTitle
           eyebrow="Risk Architecture"
           title="Control before scale."
-          body="Faytâ€™s product direction is risk-first: no custody, no web-based API secret upload, no public trade controls, and real-money beta execution through customer-side local agents."
+          body="Fayt's product direction is risk-first: no custody, no web-based API secret upload, no public trade controls, and real-money beta execution through customer-side local agents."
         />
 
         <div className="cardGrid">

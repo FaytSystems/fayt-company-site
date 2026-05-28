@@ -47,7 +47,7 @@ export default function EmailSignup() {
       try {
         if (
           !TURNSTILE_SITE_KEY ||
-          TURNSTILE_SITE_KEY === "PASTE_YOUR_REAL_TURNSTILE_SITE_KEY_HERE"
+          TURNSTILE_SITE_KEY === "0x4AAAAAADX6N6Hu6kGoXHYf"
         ) {
           setStatus("error");
           setMessage("Turnstile site key is not configured.");

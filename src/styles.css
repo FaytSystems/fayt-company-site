@@ -780,3 +780,35 @@ h3 {
     display: none;
   }
 }
+/* Fayt email signup section */
+.signupSection {
+  position: relative;
+}
+
+.signupGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.signupGrid ul {
+  margin: 18px 0 0;
+  padding-left: 18px;
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.signupGrid li {
+  margin: 8px 0;
+}
+
+.signupGrid input,
+.signupGrid select {
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .signupGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,7 @@
+﻿name = "fayt-company-site"
+compatibility_date = "2026-05-28"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fayt-email-signups"
+database_id = "61abb101-bcb8-4a53-8c5c-2172005e90b5"

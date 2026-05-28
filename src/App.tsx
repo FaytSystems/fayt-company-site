@@ -1,4 +1,6 @@
-// D:\CryptoTrader\fayt-company-site\src\App.tsx
+﻿// D:\CryptoTrader\fayt-company-site\src\App.tsx
+
+import EmailSignup from "./components/EmailSignup";
 
 const DEMO_URL = import.meta.env.VITE_DEMO_URL || "https://demo.faytsystems.com";
 const BETA_URL = import.meta.env.VITE_BETA_URL || "https://beta.faytsystems.com";
@@ -16,6 +18,7 @@ const navItems = [
   ["Risk", "#risk"],
   ["Technology", "#technology"],
   ["Investor", "#investor"],
+  ["Signup", "#signup"],
   ["Beta", "#beta"],
 ];
 
@@ -33,7 +36,7 @@ const trustCards = [
   ["Transparency", "Public paper telemetry is visible through a dedicated live demo path."],
   ["No Custody", "Real-money beta users keep funds in their own Coinbase Advanced accounts."],
   ["No API Upload", "The beta website does not ask users to upload Coinbase API secrets."],
-  ["Local Agents", "Customer-side execution agents keep credentials on the userâ€™s machine."],
+  ["Local Agents", "Customer-side execution agents keep credentials on the user's machine."],
   ["Proof Layer", "Performance claims are framed with audit context, simulation status, and guardrail language."],
 ];
 
@@ -76,7 +79,7 @@ function Header() {
 
       <div className="navActions">
         <a className="glassBtn" href={DEMO_URL}>Live Demo</a>
-        <a className="goldBtn" href={BETA_URL}>Join Beta</a>
+        <a className="goldBtn" href="#signup">Join Beta</a>
       </div>
     </header>
   );
@@ -192,7 +195,7 @@ function App() {
 
           <div className="heroActions">
             <a className="primaryBtn" href={DEMO_URL}>View Public Demo</a>
-            <a className="secondaryBtn" href={BETA_URL}>Join Beta Launch</a>
+            <a className="secondaryBtn" href="#signup">Join Beta Launch</a>
             <a className="ghostBtn" href="#investor">Investor Snapshot</a>
           </div>
 
@@ -286,7 +289,7 @@ function App() {
         <div className="cardGrid">
           {trustCards.map(([title, body]) => (
             <article className="card" key={title}>
-              <span>â—‡</span>
+              <span>◇</span>
               <h3>{title}</h3>
               <p>{body}</p>
             </article>
@@ -346,6 +349,33 @@ function App() {
               ))}
             </ul>
           </article>
+        </div>
+      </section>
+
+      <section className="section signupSection" id="signup">
+        <SectionTitle
+          eyebrow="Early Access"
+          title="Join the Fayt Systems beta and investor update list."
+          body="Sign up for product updates, beta availability, demo milestones, and verified launch communication. This form does not collect exchange credentials or API secrets."
+        />
+
+        <div className="signupGrid">
+          <div className="panel">
+            <p className="eyebrow">What this signup is for</p>
+            <h3>Beta access and milestone updates.</h3>
+            <p>
+              Fayt uses this list to share availability, onboarding instructions, public proof updates,
+              and product milestones. Real-money beta execution remains separate from this public company site.
+            </p>
+            <ul>
+              <li>No Coinbase API secret upload.</li>
+              <li>No custody of user funds.</li>
+              <li>No public trade-control access.</li>
+              <li>Protected by Cloudflare Turnstile and stored in Cloudflare D1.</li>
+            </ul>
+          </div>
+
+          <EmailSignup />
         </div>
       </section>
 

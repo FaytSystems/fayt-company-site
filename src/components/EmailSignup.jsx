@@ -1,8 +1,38 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 
 const TURNSTILE_SITE_KEY = "0x4AAAAAADX6N6Hu6kGoXHYf";
 
+function loadTurnstileScript() {
+  return new Promise((resolve, reject) => {
+    if (window.turnstile) {
+      resolve(window.turnstile);
+      return;
+    }
+
+    const existing = document.querySelector('script[data-fayt-turnstile="true"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(window.turnstile));
+      existing.addEventListener("error", reject);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.dataset.faytTurnstile = "true";
+
+    script.onload = () => resolve(window.turnstile);
+    script.onerror = reject;
+
+    document.head.appendChild(script);
+  });
+}
+
 export default function EmailSignup() {
+  const widgetRef = useRef(null);
+  const widgetIdRef = useRef(null);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [interest, setInterest] = useState("beta-access");
@@ -11,19 +41,84 @@ export default function EmailSignup() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    window.onFaytTurnstileSuccess = (token) => {
-      setTurnstileToken(token);
-    };
+    let cancelled = false;
 
-    window.onFaytTurnstileExpired = () => {
-      setTurnstileToken("");
-    };
+    async function bootTurnstile() {
+      try {
+        if (
+          !TURNSTILE_SITE_KEY ||
+          TURNSTILE_SITE_KEY === "PASTE_YOUR_REAL_TURNSTILE_SITE_KEY_HERE"
+        ) {
+          setStatus("error");
+          setMessage("Turnstile site key is not configured.");
+          return;
+        }
+
+        const turnstile = await loadTurnstileScript();
+
+        if (cancelled || !widgetRef.current || !turnstile) {
+          return;
+        }
+
+        if (widgetIdRef.current !== null) {
+          return;
+        }
+
+        widgetIdRef.current = turnstile.render(widgetRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: "dark",
+          callback: (token) => {
+            setTurnstileToken(token);
+            setMessage("");
+            if (status === "error") {
+              setStatus("idle");
+            }
+          },
+          "expired-callback": () => {
+            setTurnstileToken("");
+            setStatus("error");
+            setMessage("Verification expired. Please complete the check again.");
+          },
+          "error-callback": () => {
+            setTurnstileToken("");
+            setStatus("error");
+            setMessage("Verification could not load. Refresh the page and try again.");
+          },
+        });
+      } catch (error) {
+        setStatus("error");
+        setMessage("Verification could not load. Refresh the page and try again.");
+      }
+    }
+
+    bootTurnstile();
 
     return () => {
-      delete window.onFaytTurnstileSuccess;
-      delete window.onFaytTurnstileExpired;
+      cancelled = true;
+
+      if (window.turnstile && widgetIdRef.current !== null) {
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch {
+          // Ignore cleanup errors.
+        }
+      }
+
+      widgetIdRef.current = null;
     };
   }, []);
+
+  function resetTurnstile() {
+    setTurnstileToken("");
+
+    if (window.turnstile && widgetIdRef.current !== null) {
+      try {
+        window.turnstile.reset(widgetIdRef.current);
+      } catch {
+        // Ignore reset errors.
+      }
+    }
+  }
 
   async function submitSignup(event) {
     event.preventDefault();
@@ -63,21 +158,16 @@ export default function EmailSignup() {
       setName("");
       setEmail("");
       setInterest("beta-access");
-      setTurnstileToken("");
+      resetTurnstile();
     } catch (error) {
       setStatus("error");
       setMessage(error.message || "Signup failed.");
+      resetTurnstile();
     }
   }
 
   return (
     <section className="rounded-3xl border border-amber-300/20 bg-slate-950/80 p-6 shadow-2xl shadow-black/40">
-      <script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-        defer
-      />
-
       <div className="mb-5">
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
           Fayt Systems Beta
@@ -120,12 +210,7 @@ export default function EmailSignup() {
           <option value="demo-updates">Demo updates</option>
         </select>
 
-        <div
-          className="cf-turnstile"
-          data-sitekey={TURNSTILE_SITE_KEY}
-          data-callback="onFaytTurnstileSuccess"
-          data-expired-callback="onFaytTurnstileExpired"
-        />
+        <div ref={widgetRef} className="min-h-[72px]" />
 
         <button
           type="submit"

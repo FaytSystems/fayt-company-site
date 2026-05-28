@@ -27,17 +27,11 @@ async function sha256Hex(value) {
 
 async function verifyTurnstile({ token, secret, ip }) {
   if (!secret) {
-    return {
-      ok: false,
-      error: "TURNSTILE_SECRET_KEY is not configured.",
-    };
+    return { ok: false, error: "TURNSTILE_SECRET_KEY is not configured." };
   }
 
   if (!token) {
-    return {
-      ok: false,
-      error: "Turnstile token missing.",
-    };
+    return { ok: false, error: "Turnstile token missing." };
   }
 
   const formData = new FormData();
@@ -54,10 +48,7 @@ async function verifyTurnstile({ token, secret, ip }) {
   });
 
   if (!response.ok) {
-    return {
-      ok: false,
-      error: `Turnstile verification HTTP ${response.status}`,
-    };
+    return { ok: false, error: `Turnstile verification HTTP ${response.status}` };
   }
 
   const result = await response.json();
@@ -78,25 +69,13 @@ export async function onRequestPost(context) {
 
   try {
     if (!env.DB) {
-      return jsonResponse(
-        {
-          ok: false,
-          error: "D1 database binding DB is missing.",
-        },
-        500
-      );
+      return jsonResponse({ ok: false, error: "D1 database binding DB is missing." }, 500);
     }
 
     const body = await request.json().catch(() => null);
 
     if (!body || typeof body !== "object") {
-      return jsonResponse(
-        {
-          ok: false,
-          error: "Invalid JSON body.",
-        },
-        400
-      );
+      return jsonResponse({ ok: false, error: "Invalid JSON body." }, 400);
     }
 
     const email = normalizeEmail(body.email);
@@ -106,13 +85,7 @@ export async function onRequestPost(context) {
     const turnstileToken = String(body.turnstileToken || "").trim();
 
     if (!isValidEmail(email)) {
-      return jsonResponse(
-        {
-          ok: false,
-          error: "Enter a valid email address.",
-        },
-        400
-      );
+      return jsonResponse({ ok: false, error: "Enter a valid email address." }, 400);
     }
 
     const ip =
@@ -178,11 +151,5 @@ export async function onRequestPost(context) {
 }
 
 export async function onRequestGet() {
-  return jsonResponse(
-    {
-      ok: false,
-      error: "Use POST.",
-    },
-    405
-  );
+  return jsonResponse({ ok: false, error: "Use POST." }, 405);
 }

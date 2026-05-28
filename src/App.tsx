@@ -1,4 +1,4 @@
-﻿// D:\CryptoTrader\fayt-company-site\src\App.tsx
+// D:\CryptoTrader\fayt-company-site\src\App.tsx
 
 import EmailSignup from "./components/EmailSignup";
 

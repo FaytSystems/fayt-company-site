@@ -29,6 +29,102 @@ function loadTurnstileScript() {
   });
 }
 
+const styles = {
+  card: {
+    width: "100%",
+    maxWidth: "520px",
+    boxSizing: "border-box",
+    border: "1px solid rgba(255, 214, 110, 0.22)",
+    borderRadius: "28px",
+    background: "linear-gradient(145deg, rgba(6, 18, 38, 0.96), rgba(8, 13, 26, 0.92))",
+    boxShadow: "0 30px 90px rgba(0, 0, 0, 0.42)",
+    padding: "28px",
+    overflow: "hidden",
+  },
+  eyebrow: {
+    margin: "0 0 10px",
+    color: "#ffd66e",
+    fontSize: "12px",
+    fontWeight: 800,
+    letterSpacing: "0.26em",
+    textTransform: "uppercase",
+  },
+  title: {
+    margin: "0",
+    color: "#ffffff",
+    fontSize: "clamp(28px, 4vw, 46px)",
+    lineHeight: "1.02",
+    letterSpacing: "-0.055em",
+    fontWeight: 850,
+  },
+  body: {
+    margin: "14px 0 22px",
+    color: "rgba(226, 232, 240, 0.8)",
+    fontSize: "15px",
+    lineHeight: "1.65",
+  },
+  form: {
+    display: "grid",
+    gap: "12px",
+  },
+  input: {
+    width: "100%",
+    boxSizing: "border-box",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    borderRadius: "16px",
+    background: "rgba(255, 255, 255, 0.055)",
+    color: "#ffffff",
+    padding: "13px 14px",
+    fontSize: "15px",
+    outline: "none",
+  },
+  select: {
+    width: "100%",
+    boxSizing: "border-box",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    borderRadius: "16px",
+    background: "rgba(10, 20, 38, 0.98)",
+    color: "#ffffff",
+    padding: "13px 14px",
+    fontSize: "15px",
+    outline: "none",
+  },
+  turnstileWrap: {
+    minHeight: "76px",
+    display: "flex",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  button: {
+    width: "100%",
+    border: "0",
+    borderRadius: "16px",
+    background: "linear-gradient(135deg, #ffd66e, #ffb84d)",
+    color: "#080d1a",
+    padding: "14px 18px",
+    fontSize: "15px",
+    fontWeight: 850,
+    cursor: "pointer",
+    boxShadow: "0 18px 40px rgba(255, 214, 110, 0.22)",
+  },
+  buttonDisabled: {
+    opacity: 0.62,
+    cursor: "not-allowed",
+  },
+  success: {
+    margin: "2px 0 0",
+    color: "#7fffc3",
+    fontSize: "14px",
+    lineHeight: "1.5",
+  },
+  error: {
+    margin: "2px 0 0",
+    color: "#ff9b9b",
+    fontSize: "14px",
+    lineHeight: "1.5",
+  },
+};
+
 export default function EmailSignup() {
   const widgetRef = useRef(null);
   const widgetIdRef = useRef(null);
@@ -45,10 +141,7 @@ export default function EmailSignup() {
 
     async function bootTurnstile() {
       try {
-        if (
-          !TURNSTILE_SITE_KEY ||
-          TURNSTILE_SITE_KEY === "0x4AAAAAADX6N6Hu6kGoXHYf"
-        ) {
+        if (!TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.includes("PASTE")) {
           setStatus("error");
           setMessage("Turnstile site key is not configured.");
           return;
@@ -69,10 +162,8 @@ export default function EmailSignup() {
           theme: "dark",
           callback: (token) => {
             setTurnstileToken(token);
+            setStatus("idle");
             setMessage("");
-            if (status === "error") {
-              setStatus("idle");
-            }
           },
           "expired-callback": () => {
             setTurnstileToken("");
@@ -85,7 +176,7 @@ export default function EmailSignup() {
             setMessage("Verification could not load. Refresh the page and try again.");
           },
         });
-      } catch (error) {
+      } catch {
         setStatus("error");
         setMessage("Verification could not load. Refresh the page and try again.");
       }
@@ -166,29 +257,31 @@ export default function EmailSignup() {
     }
   }
 
+  const buttonStyle =
+    status === "loading"
+      ? { ...styles.button, ...styles.buttonDisabled }
+      : styles.button;
+
   return (
-    <section className="rounded-3xl border border-amber-300/20 bg-slate-950/80 p-6 shadow-2xl shadow-black/40">
-      <div className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
-          Fayt Systems Beta
-        </p>
+    <section style={styles.card}>
+      <div>
+        <p style={styles.eyebrow}>Fayt Systems Beta</p>
 
-        <h2 className="mt-2 text-2xl font-semibold text-white">
-          Join the early access list
-        </h2>
+        <h2 style={styles.title}>Join the early access list</h2>
 
-        <p className="mt-2 text-sm leading-6 text-slate-300">
-          Get product updates, demo milestones, and beta availability for Fayt’s
+        <p style={styles.body}>
+          Get product updates, demo milestones, and beta availability for Fayt's
           market intelligence and execution infrastructure.
         </p>
       </div>
 
-      <form onSubmit={submitSignup} className="space-y-3">
+      <form onSubmit={submitSignup} style={styles.form}>
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Name"
-          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/60"
+          autoComplete="name"
+          style={styles.input}
         />
 
         <input
@@ -197,37 +290,30 @@ export default function EmailSignup() {
           placeholder="Email"
           type="email"
           required
-          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/60"
+          autoComplete="email"
+          style={styles.input}
         />
 
         <select
           value={interest}
           onChange={(event) => setInterest(event.target.value)}
-          className="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-amber-300/60"
+          style={styles.select}
         >
           <option value="beta-access">Beta access</option>
           <option value="investor-updates">Investor updates</option>
           <option value="demo-updates">Demo updates</option>
         </select>
 
-        <div ref={widgetRef} className="min-h-[72px]" />
+        <div style={styles.turnstileWrap}>
+          <div ref={widgetRef} />
+        </div>
 
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="w-full rounded-2xl bg-amber-300 px-5 py-3 font-semibold text-black shadow-lg shadow-amber-300/20 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={status === "loading"} style={buttonStyle}>
           {status === "loading" ? "Joining..." : "Join the early access list"}
         </button>
 
         {message && (
-          <p
-            className={
-              status === "error"
-                ? "text-sm text-red-300"
-                : "text-sm text-emerald-300"
-            }
-          >
+          <p style={status === "error" ? styles.error : styles.success}>
             {message}
           </p>
         )}
@@ -235,4 +321,3 @@ export default function EmailSignup() {
     </section>
   );
 }
-
